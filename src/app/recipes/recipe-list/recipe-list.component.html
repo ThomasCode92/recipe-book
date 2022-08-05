@@ -7,16 +7,18 @@
 <div class="row">
   <div class="col-xs-12">
     <div class="list-group">
-      <a class="list-group-item" href="#">
+      <a
+        *ngFor="let recipe of recipes"
+        class="list-group-item" href="#">
         <div class="float-start">
-          <h4>Recipe Name</h4>
-          <p>Description</p>
+          <h4>{{ recipe.name }}</h4>
+          <p>{{ recipe.description }}</p>
         </div>
         <span class="float-end">
           <img
             class="img-fluid"
-            style="max-height: 50px;"
-            src="" alt="" />
+            style="max-height: 75px;"
+            [src]="recipe.imagePath" [alt]="recipe.name" />
         </span>
       </a>
     </div>

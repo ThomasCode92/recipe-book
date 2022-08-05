@@ -4,10 +4,11 @@
     <hr />
     <ul class="list-group">
       <a
+        *ngFor="let ingredient of ingredients"
         class="list-group-item"
         style="cursor: pointer;"
         href="#">
-        
+        {{ ingredient.name }} ({{ ingredient.amount }})
       </a>
     </ul>
   </div>

@@ -8,11 +8,18 @@ export class DropdownDirective {
 
   constructor(private elementRef: ElementRef, private renderer: Renderer2) {}
 
-  @HostListener('click') onClick() {
+  @HostListener('document:click', ['$event']) onClick(event: Event) {
     const hostElement = <HTMLAnchorElement>this.elementRef.nativeElement;
+    const eventTarget = <Node>event.target;
+
     const dropdownMenu = hostElement.nextElementSibling;
 
     if (!dropdownMenu) return;
+
+    if (!hostElement.contains(eventTarget)) {
+      this.isOpen = false;
+      return this.renderer.removeClass(dropdownMenu, 'show');
+    }
 
     if (!this.isOpen) {
       this.renderer.addClass(dropdownMenu, 'show');

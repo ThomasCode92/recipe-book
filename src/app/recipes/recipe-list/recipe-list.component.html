@@ -9,7 +9,6 @@
     <div class="list-group">
       <a
         *ngFor="let recipeElement of recipes"
-        (click)="onRecipeSelected(recipeElement)"
         class="list-group-item" style="cursor: pointer;">
         <app-recipe-item [recipe]="recipeElement"></app-recipe-item>      
       </a>

@@ -1,29 +1,31 @@
 <div class="row">
   <div class="col-xs-12">
-    <div class="row">
-      <div class="col-sm-5">
-        <label for="name">Name</label>
-        <input
-          type="text" id="name"
-          class="form-control"
-          #nameInput />
-      </div>
-      <div class="col-sm-2">
-        <label for="amount">Amount</label>
-        <input
-          type="number" id="amount"
-          class="form-control"
-          #amountInput />
-      </div>
+    <form
+      #form="ngForm"
+      (ngSubmit)="onAddItem(form)" >
       <div class="row">
-        <div class="col-xs-12 btn-toolbar">
-          <button
-            type="submit" class="btn btn-success"
-            (click)="onAddItem()">Add</button>
-          <button class="btn btn-danger" type="button">Delete</button>
-          <button class="btn btn-primary" type="button">Clear</button>
+        <div class="col-sm-5">
+          <label for="name">Name</label>
+          <input
+            ngModel name="name"
+            type="text" id="name"
+            class="form-control" />
+        </div>
+        <div class="col-sm-2">
+          <label for="amount">Amount</label>
+          <input
+            ngModel name="amount"
+            type="number" id="amount"
+            class="form-control" />
+        </div>
+        <div class="row">
+          <div class="col-xs-12 btn-toolbar">
+            <button type="submit" class="btn btn-success">Add</button>
+            <button class="btn btn-danger" type="button">Delete</button>
+            <button class="btn btn-primary" type="button">Clear</button>
+          </div>
         </div>
       </div>
-    </div>
+  </form>
   </div>
 </div>

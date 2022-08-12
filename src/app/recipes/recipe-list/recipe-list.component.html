@@ -9,7 +9,7 @@
     <div class="list-group">
       <a
         *ngFor="let recipeElement of recipes; let i = index"
-        [routerLink]="[i]"
+        [routerLink]="[i]" routerLinkActive="active"
         class="list-group-item" style="cursor: pointer;">
         <app-recipe-item [recipe]="recipeElement"></app-recipe-item>      
       </a>

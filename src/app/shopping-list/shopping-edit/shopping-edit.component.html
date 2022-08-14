@@ -9,18 +9,24 @@
           <input
             ngModel name="name"
             type="text" id="name"
-            class="form-control" />
+            class="form-control"
+            required />
         </div>
         <div class="col-sm-2">
           <label for="amount">Amount</label>
           <input
             ngModel name="amount"
             type="number" id="amount"
-            class="form-control" />
+            class="form-control"
+            required min="0" pattern="^[1-9]+[0-9]*$" />
         </div>
         <div class="row">
           <div class="col-xs-12 btn-toolbar">
-            <button type="submit" class="btn btn-success">Add</button>
+            <button
+              class="btn btn-success"
+              type="submit" [disabled]="!form.valid" >
+              Add
+            </button>
             <button class="btn btn-danger" type="button">Delete</button>
             <button class="btn btn-primary" type="button">Clear</button>
           </div>

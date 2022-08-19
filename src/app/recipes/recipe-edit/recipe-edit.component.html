@@ -38,10 +38,21 @@
               class="form-control" rows="6"
             ></textarea>
           </div>
-          <div class="input-group mb-3">
-            <input type="text" class="form-control" />
-            <input type="number" class="form-control" style="max-width: 20%;" />
-            <button class="btn btn-outline-danger" type="button">Delete</button>
+          <div formArrayName="ingredients">
+            <div
+              *ngFor="let ingredientControl of ingredientControls; let i = index"
+              [formGroupName]="i">
+              <div class="input-group mb-3">
+                <input
+                  formControlName="name"
+                  type="text" class="form-control" />
+                <input
+                  formControlName="amount"
+                  type="number" class="form-control"
+                  style="max-width: 20%;" />
+                <button class="btn btn-outline-danger" type="button">Delete</button>
+              </div>
+            </div>
           </div>
         </div>
       </div>

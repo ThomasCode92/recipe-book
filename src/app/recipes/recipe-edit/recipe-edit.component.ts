@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormArray, FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute, Params } from '@angular/router';
-import { Ingredient } from 'src/app/shared/ingredient.model';
 
 import { RecipeService } from '../recipe.service';
 
@@ -14,8 +13,9 @@ export class RecipeEditComponent implements OnInit {
   recipeId!: number;
   recipeForm!: FormGroup;
   editMode = false;
+  canAddIngredient = true;
 
-  get ingredientControls() { // a getter!
+  get ingredientControls() {
     return (<FormArray>this.recipeForm.get('ingredients')).controls;
   }
 
@@ -33,6 +33,23 @@ export class RecipeEditComponent implements OnInit {
 
       this.initForm();
     });
+  }
+
+  onAddIngredient() {
+    const ingredientControls = this.ingredientControls;
+    const lastControlIndex = ingredientControls.length - 1;
+    const lastControl = ingredientControls[lastControlIndex];
+
+    if (!lastControl.value.name && !lastControl.value.amount) return;
+
+    ingredientControls.push(
+      new FormGroup({
+        name: new FormControl(),
+        amount: new FormControl(),
+      })
+    );
+
+    this.canAddIngredient = false;
   }
 
   onSubmit() {

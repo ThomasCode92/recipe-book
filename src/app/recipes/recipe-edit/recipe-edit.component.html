@@ -53,6 +53,12 @@
                 <button class="btn btn-outline-danger" type="button">Delete</button>
               </div>
             </div>
+            <button
+              type="button" [disabled]="!canAddIngredient"
+              (click)="onAddIngredient()"
+              class="btn btn-success">
+              Add Ingredient
+            </button>
           </div>
         </div>
       </div>

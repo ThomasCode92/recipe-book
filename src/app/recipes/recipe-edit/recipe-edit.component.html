@@ -67,12 +67,20 @@
                 </button>
               </div>
             </div>
-            <button
+            <div class="btn-toolbar">
+              <button
+                type="button"
+                (click)="onAddIngredient()"
+                class="btn btn-success">
+                Add Ingredient
+              </button>
+              <button
               type="button"
-              (click)="onAddIngredient()"
-              class="btn btn-success">
-              Add Ingredient
+              (click)="onDeleteAllIngredient()"
+              class="btn btn-danger">
+              Delete All Ingredient
             </button>
+            </div>
           </div>
         </div>
       </div>

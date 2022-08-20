@@ -1,1 +1,89 @@
-<p>recipe-edit works!</p>
+<div class="row">
+  <div class="col-xs-12">
+    <form
+      [formGroup]="recipeForm"
+      (ngSubmit)="onSubmit()">
+      <div class="row">
+        <div class="col-12">
+          <div class="btn-toolbar">
+            <button
+              type="submit" [disabled]="!recipeForm.valid"
+              class="btn btn-success">
+              Save
+            </button>
+            <button
+              type="button"(click)="onCancel()"
+              class="btn btn-primary">Cancel</button>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-12">
+          <div class="mb-3">
+            <label for="name" class="form-label">Name</label>
+            <input
+              formControlName="name"
+              type="text" id="name"
+              class="form-control" />
+          </div>
+          <div class="mb-3">
+            <label for="imagePath" class="form-label">Image URL</label>
+            <input
+              formControlName="imagePath"
+              #imagePath
+              type="text" id="imagePath"
+              class="form-control" />
+          </div>
+          <div class="mb-3">
+            <img
+              [src]="imagePath.value"
+              class="img-fluid" style="max-height: 100px;" />
+          </div>
+          <div class="mb-3">
+            <label for="description" class="form-label">Description</label>
+            <textarea
+              formControlName="description"
+              id="description"
+              class="form-control" rows="6"
+            ></textarea>
+          </div>
+          <div formArrayName="ingredients">
+            <div
+              *ngFor="let ingredientControl of ingredientControls; let i = index"
+              [formGroupName]="i">
+              <div class="input-group mb-3">
+                <input
+                  formControlName="name"
+                  type="text" class="form-control" />
+                <input
+                  formControlName="amount"
+                  type="number" class="form-control"
+                  style="max-width: 20%;" min="0" />
+                <button
+                  type="button"
+                  (click)="onDeleteIngredient(i)"
+                  class="btn btn-outline-danger" >
+                  Delete
+                </button>
+              </div>
+            </div>
+            <div class="btn-toolbar">
+              <button
+                type="button"
+                (click)="onAddIngredient()"
+                class="btn btn-success">
+                Add Ingredient
+              </button>
+              <button
+              type="button"
+              (click)="onDeleteAllIngredient()"
+              class="btn btn-danger">
+              Delete All Ingredient
+            </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

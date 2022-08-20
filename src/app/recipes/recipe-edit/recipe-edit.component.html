@@ -30,11 +30,14 @@
             <label for="imagePath" class="form-label">Image URL</label>
             <input
               formControlName="imagePath"
+              #imagePath
               type="text" id="imagePath"
               class="form-control" />
           </div>
           <div class="mb-3">
-            <img src="" alt="" class="img-responsive" />
+            <img
+              [src]="imagePath.value"
+              class="img-fluid" style="max-height: 100px;" />
           </div>
           <div class="mb-3">
             <label for="description" class="form-label">Description</label>

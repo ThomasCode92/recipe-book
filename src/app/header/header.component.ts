@@ -13,7 +13,7 @@ export class HeaderComponent {
   constructor(private dataStorageService: DataStorageService) {}
 
   onFetchData() {
-    this.dataStorageService.fetchRecipes();
+    this.dataStorageService.fetchRecipes().subscribe();
   }
 
   onSaveData() {

@@ -14,8 +14,15 @@
           class="form-control" />
       </div>
       <div class="btn-toolbar">
-        <button class="btn btn-primary">Sign Up</button>
-        <button class="btn btn-primary">Switch to Login</button>
+        <button
+          type="submit" class="btn btn-primary">
+          {{ isLoginMode ? 'Login' : 'Sign Up' }}
+        </button>
+        <button
+          (click)="onSwitchMode()"
+          type="button" class="btn btn-primary">
+          Switch to {{ isLoginMode ? 'Sign Up' : 'Login' }}
+        </button>
       </div>
     </form>
   </div>

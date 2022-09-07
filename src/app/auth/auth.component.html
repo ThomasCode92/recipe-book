@@ -1,6 +1,12 @@
 <div class="row">
   <div class="col-xs col-md-6 offset-md-3">
+    <div
+      *ngIf="!isLoading && error"
+      class="alert alert-danger">
+      <p>{{ error }}</p>
+    </div>
     <form
+      *ngIf="!isLoading; else loadingSpinner"
       #authForm="ngForm"
       (ngSubmit)="onSubmit(authForm)">
       <div class="mb-3">
@@ -32,5 +38,10 @@
         </button>
       </div>
     </form>
+    <ng-template #loadingSpinner>
+      <div class="loading-spinner">
+        <app-loading-spinner></app-loading-spinner>
+      </div>
+    </ng-template>
   </div>
 </div>

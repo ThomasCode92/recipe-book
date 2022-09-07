@@ -2,3 +2,7 @@
   min-width: 6rem;
   margin-right: 0.5rem;
 }
+
+.loading-spinner {
+  text-align: center;
+}

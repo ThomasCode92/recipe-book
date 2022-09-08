@@ -2,16 +2,17 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { catchError, throwError } from 'rxjs';
 
-interface AuthResponseData {
+export interface AuthResponseData {
   idToken: string;
   email: string;
   refreshToken: string;
   expiresIn: string;
   localId: string;
+  registered?: boolean;
 }
 
-const BASE_URL =
-  'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyAn_4DJnapj3CknGFqPWmJgmwd73gWfrHM';
+const BASE_URL = 'https://identitytoolkit.googleapis.com/v1/';
+const API_KEY = 'AIzaSyAn_4DJnapj3CknGFqPWmJgmwd73gWfrHM';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -19,7 +20,7 @@ export class AuthService {
 
   signup(email: string, password: string) {
     return this.http
-      .post<AuthResponseData>(BASE_URL, {
+      .post<AuthResponseData>(BASE_URL + 'accounts:signUp?key=' + API_KEY, {
         email: email,
         password: password,
         returnSecureToken: true,
@@ -43,5 +44,12 @@ export class AuthService {
           return throwError(() => error);
         })
       );
+  }
+
+  login(email: string, password: string) {
+    return this.http.post<AuthResponseData>(
+      BASE_URL + 'accounts:signInWithPassword?key=' + API_KEY,
+      { email: email, password: password, returnSecureToken: true }
+    );
   }
 }

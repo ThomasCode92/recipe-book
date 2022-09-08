@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { catchError, throwError } from 'rxjs';
 
 export interface AuthResponseData {
@@ -25,31 +25,37 @@ export class AuthService {
         password: password,
         returnSecureToken: true,
       })
-      .pipe(
-        catchError(errorResponse => {
-          if (!errorResponse.error || !errorResponse.error.error)
-            return throwError(() => errorResponse);
-
-          const errorMessage = errorResponse.error.error.message;
-          let error: string;
-
-          switch (errorMessage) {
-            case 'EMAIL_EXISTS':
-              error = 'This email exists already!';
-              break;
-            default:
-              error = 'An unkown error occurred!';
-          }
-
-          return throwError(() => error);
-        })
-      );
+      .pipe(catchError(this.handleError));
   }
 
   login(email: string, password: string) {
-    return this.http.post<AuthResponseData>(
-      BASE_URL + 'accounts:signInWithPassword?key=' + API_KEY,
-      { email: email, password: password, returnSecureToken: true }
-    );
+    return this.http
+      .post<AuthResponseData>(
+        BASE_URL + 'accounts:signInWithPassword?key=' + API_KEY,
+        { email: email, password: password, returnSecureToken: true }
+      )
+      .pipe(catchError(this.handleError));
+  }
+
+  private handleError(errorRes: HttpErrorResponse) {
+    if (!errorRes.error || !errorRes.error.error)
+      return throwError(() => errorRes);
+
+    const errorMessage = errorRes.error.error.message;
+    let error: string;
+
+    switch (errorMessage) {
+      case 'EMAIL_EXISTS':
+        error = 'This email exists already!';
+        break;
+      case 'EMAIL_NOT_FOUND':
+      case 'INVALID_PASSWORD':
+        error = 'Invalid credentials!';
+        break;
+      default:
+        error = 'An unkown error occurred!';
+    }
+
+    return throwError(() => error);
   }
 }

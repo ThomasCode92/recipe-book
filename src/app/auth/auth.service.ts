@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { catchError, throwError } from 'rxjs';
+import { catchError, Subject, tap, throwError } from 'rxjs';
+
+import { User } from './user.model';
 
 export interface AuthResponseData {
   idToken: string;
@@ -16,6 +18,8 @@ const API_KEY = 'AIzaSyAn_4DJnapj3CknGFqPWmJgmwd73gWfrHM';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
+  user = new Subject<User>();
+
   constructor(private http: HttpClient) {}
 
   signup(email: string, password: string) {
@@ -25,7 +29,17 @@ export class AuthService {
         password: password,
         returnSecureToken: true,
       })
-      .pipe(catchError(this.handleError));
+      .pipe(
+        catchError(this.handleError),
+        tap(resData => {
+          this.handleAuthentication(
+            resData.localId,
+            resData.email,
+            resData.localId,
+            parseInt(resData.expiresIn) * 1000
+          );
+        })
+      );
   }
 
   login(email: string, password: string) {
@@ -34,7 +48,33 @@ export class AuthService {
         BASE_URL + 'accounts:signInWithPassword?key=' + API_KEY,
         { email: email, password: password, returnSecureToken: true }
       )
-      .pipe(catchError(this.handleError));
+      .pipe(
+        catchError(this.handleError),
+        tap(resData => {
+          this.handleAuthentication(
+            resData.localId,
+            resData.email,
+            resData.localId,
+            parseInt(resData.expiresIn) * 1000
+          );
+        })
+      );
+  }
+
+  private handleAuthentication(
+    userId: string,
+    email: string,
+    token: string,
+    expiresIn: number
+  ) {
+    const currentTime = new Date().getTime(); // current time in milliseconds
+    const expirationDate = new Date(currentTime + expiresIn);
+
+    const user = new User(userId, email, token, expirationDate);
+
+    console.log(user);
+
+    this.user.next(user);
   }
 
   private handleError(errorRes: HttpErrorResponse) {

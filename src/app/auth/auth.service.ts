@@ -72,8 +72,6 @@ export class AuthService {
 
     const user = new User(userId, email, token, expirationDate);
 
-    console.log(user);
-
     this.user.next(user);
   }
 

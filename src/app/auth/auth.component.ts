@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { NgForm } from '@angular/forms';
+import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 
 import { AuthResponseData, AuthService } from './auth.service';
@@ -14,7 +15,7 @@ export class AuthComponent {
   isLoading = false;
   error: string | null = null;
 
-  constructor(private authService: AuthService) {}
+  constructor(private router: Router, private authService: AuthService) {}
 
   onSwitchMode() {
     this.isLoginMode = !this.isLoginMode;
@@ -38,8 +39,9 @@ export class AuthComponent {
 
     authObs.subscribe({
       next: responseData => {
+        console.log(responseData);        
         this.isLoading = false;
-        console.log(responseData);
+        this.router.navigate(['/recipes']);
       },
       error: errorMessage => {
         console.log(errorMessage);

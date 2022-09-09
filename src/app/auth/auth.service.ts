@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { catchError, Subject, tap, throwError } from 'rxjs';
+import { BehaviorSubject, catchError, Subject, tap, throwError } from 'rxjs';
 
 import { User } from './user.model';
 
@@ -18,7 +18,7 @@ const API_KEY = 'AIzaSyAn_4DJnapj3CknGFqPWmJgmwd73gWfrHM';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  user = new Subject<User>();
+  user = new BehaviorSubject<User | null>(null);
 
   constructor(private http: HttpClient) {}
 
@@ -35,7 +35,7 @@ export class AuthService {
           this.handleAuthentication(
             resData.localId,
             resData.email,
-            resData.localId,
+            resData.idToken,
             parseInt(resData.expiresIn) * 1000
           );
         })
@@ -54,7 +54,7 @@ export class AuthService {
           this.handleAuthentication(
             resData.localId,
             resData.email,
-            resData.localId,
+            resData.idToken,
             parseInt(resData.expiresIn) * 1000
           );
         })

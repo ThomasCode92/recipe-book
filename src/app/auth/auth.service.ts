@@ -62,8 +62,33 @@ export class AuthService {
       );
   }
 
+  autoLogin() {
+    const loadedUser = localStorage.getItem('userData');
+    if (!loadedUser) return;
+
+    const userData: {
+      id: string;
+      email: string;
+      _token: string;
+      _tokenExpirationDate: string;
+    } = JSON.parse(loadedUser);
+
+    const user = new User(
+      userData.id,
+      userData.email,
+      userData._token,
+      new Date(userData._tokenExpirationDate)
+    );
+
+    if (user.token) {
+      this.user.next(user);
+    }
+  }
+
   logout() {
     this.user.next(null);
+    localStorage.removeItem('userData');
+    
     this.router.navigate(['/auth']);
   }
 
@@ -79,6 +104,8 @@ export class AuthService {
     const user = new User(userId, email, token, expirationDate);
 
     this.user.next(user);
+
+    localStorage.setItem('userData', JSON.stringify(user));
   }
 
   private handleError(errorRes: HttpErrorResponse) {

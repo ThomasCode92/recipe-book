@@ -23,7 +23,7 @@
             Recipes
           </a>
         </li>
-        <li *ngIf="isAuthenticated" class="nav-item">
+        <li class="nav-item">
           <a
             class="nav-link"
             routerLink="/shopping-list" routerLinkActive="active">
@@ -40,7 +40,11 @@
       </ul>
       <ul class="navbar-nav">
         <li *ngIf="isAuthenticated" class="nav-item">
-          <a class="nav-link" style="cursor: pointer;">Logout</a>
+          <a
+            (click)="onLogout()"
+            class="nav-link" style="cursor: pointer;">
+            Logout
+          </a>
         </li>
         <li *ngIf="isAuthenticated" class="nav-item dropdown">
           <a

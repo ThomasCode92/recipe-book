@@ -5,7 +5,11 @@
       class="alert alert-danger">
       <p>{{ error }}</p>
     </div> -->
-    <app-alert *ngIf="!isLoading && error" [message]="error"></app-alert>
+    <app-alert
+      *ngIf="!isLoading && error"
+      [message]="error"
+      (close)="onHandleError()">
+    </app-alert>
     <form
       *ngIf="!isLoading; else loadingSpinner"
       #authForm="ngForm"

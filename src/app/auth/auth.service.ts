@@ -19,6 +19,8 @@ const API_KEY = 'AIzaSyAn_4DJnapj3CknGFqPWmJgmwd73gWfrHM';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
+  private tokeExpirationTimer: any;
+
   user = new BehaviorSubject<User | null>(null);
 
   constructor(private http: HttpClient, private router: Router) {}
@@ -81,15 +83,30 @@ export class AuthService {
     );
 
     if (user.token) {
+      const expirationDuration =
+        new Date(userData._tokenExpirationDate).getTime() -
+        new Date().getTime();
+
       this.user.next(user);
+      this.autoLogout(expirationDuration);
     }
   }
 
   logout() {
     this.user.next(null);
     localStorage.removeItem('userData');
-    
+
+    if (this.tokeExpirationTimer) {
+      clearTimeout(this.tokeExpirationTimer);
+    }
+
     this.router.navigate(['/auth']);
+  }
+
+  autoLogout(expirationDuration: number) {
+    this.tokeExpirationTimer = setTimeout(() => {
+      this.logout();
+    }, expirationDuration);
   }
 
   private handleAuthentication(
@@ -104,6 +121,7 @@ export class AuthService {
     const user = new User(userId, email, token, expirationDate);
 
     this.user.next(user);
+    this.autoLogout(expiresIn);
 
     localStorage.setItem('userData', JSON.stringify(user));
   }

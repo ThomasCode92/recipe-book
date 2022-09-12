@@ -1,10 +1,11 @@
 <div class="row">
   <div class="col-xs col-md-6 offset-md-3">
-    <div
+    <!-- <div
       *ngIf="!isLoading && error"
       class="alert alert-danger">
       <p>{{ error }}</p>
-    </div>
+    </div> -->
+    <app-alert *ngIf="!isLoading && error" [message]="error"></app-alert>
     <form
       *ngIf="!isLoading; else loadingSpinner"
       #authForm="ngForm"

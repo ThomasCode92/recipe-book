@@ -1,3 +1,4 @@
+<ng-template appPlaceholder></ng-template>
 <div class="row">
   <div class="col-xs col-md-6 offset-md-3">
     <!-- <div
@@ -5,11 +6,11 @@
       class="alert alert-danger">
       <p>{{ error }}</p>
     </div> -->
-    <app-alert
+    <!-- <app-alert
       *ngIf="!isLoading && error"
       [message]="error"
       (close)="onHandleError()">
-    </app-alert>
+    </app-alert> -->
     <form
       *ngIf="!isLoading; else loadingSpinner"
       #authForm="ngForm"

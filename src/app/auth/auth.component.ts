@@ -1,9 +1,10 @@
-import { Component, ViewContainerRef } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 
 import { AlertComponent } from '../shared/alert/alert.component';
+import { PlaceholderDirective } from '../shared/placeholder.directive';
 import { AuthResponseData, AuthService } from './auth.service';
 
 @Component({
@@ -16,11 +17,9 @@ export class AuthComponent {
   isLoading = false;
   error: string | null = null;
 
-  constructor(
-    private router: Router,
-    private viewContainerRef: ViewContainerRef,
-    private authService: AuthService
-  ) {}
+  @ViewChild(PlaceholderDirective) alertHost!: PlaceholderDirective;
+
+  constructor(private router: Router, private authService: AuthService) {}
 
   onSwitchMode() {
     this.isLoginMode = !this.isLoginMode;
@@ -63,7 +62,9 @@ export class AuthComponent {
   }
 
   private showErrorAlert(message: string) {
-    const alertComponentRef =
-      this.viewContainerRef.createComponent(AlertComponent);
+    const hostViewContainerRef = this.alertHost.viewContainerRef;
+
+    hostViewContainerRef.clear();
+    hostViewContainerRef.createComponent(AlertComponent);
   }
 }

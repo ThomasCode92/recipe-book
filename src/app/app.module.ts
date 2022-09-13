@@ -24,6 +24,7 @@ import { ShoppingListService } from './shopping-list/shopping-list.service';
 import { RecipeService } from './recipes/recipe.service';
 
 import { DropdownDirective } from './shared/dropdown.directive';
+import { PlaceholderDirective } from './shared/placeholder.directive';
 
 @NgModule({
   declarations: [
@@ -36,11 +37,12 @@ import { DropdownDirective } from './shared/dropdown.directive';
     RecipeItemComponent,
     ShoppingListComponent,
     ShoppingEditComponent,
-    DropdownDirective,
     RecipeStartComponent,
     RecipeEditComponent,
     AlertComponent,
     LoadingSpinnerComponent,
+    DropdownDirective,
+    PlaceholderDirective,
   ],
   imports: [
     BrowserModule,

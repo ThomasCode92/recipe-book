@@ -14,8 +14,11 @@
       <a
         *ngFor="let recipeElement of recipes; let i = index"
         [routerLink]="[i]" routerLinkActive="active"
-        class="list-group-item" style="cursor: pointer;">
-        <app-recipe-item [recipe]="recipeElement"></app-recipe-item>      
+        class="list-group-item " style="cursor: pointer;">
+        <app-recipe-item
+          class="d-flex justify-content-between align-items-center"
+          [recipe]="recipeElement">
+        </app-recipe-item>      
       </a>
     </div>
   </div>

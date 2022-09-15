@@ -5,6 +5,8 @@ import { BehaviorSubject, catchError, tap, throwError } from 'rxjs';
 
 import { User } from './user.model';
 
+import { environment } from '../../environments/environment';
+
 export interface AuthResponseData {
   idToken: string;
   email: string;
@@ -14,8 +16,7 @@ export interface AuthResponseData {
   registered?: boolean;
 }
 
-const BASE_URL = 'https://identitytoolkit.googleapis.com/v1/';
-const API_KEY = 'AIzaSyAn_4DJnapj3CknGFqPWmJgmwd73gWfrHM';
+const FIREBASE_API_KEY = environment.firebaseAPIKey;
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -27,11 +28,14 @@ export class AuthService {
 
   signup(email: string, password: string) {
     return this.http
-      .post<AuthResponseData>(BASE_URL + 'accounts:signUp?key=' + API_KEY, {
-        email: email,
-        password: password,
-        returnSecureToken: true,
-      })
+      .post<AuthResponseData>(
+        `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${FIREBASE_API_KEY}`,
+        {
+          email: email,
+          password: password,
+          returnSecureToken: true,
+        }
+      )
       .pipe(
         catchError(this.handleError),
         tap(resData => {
@@ -48,7 +52,7 @@ export class AuthService {
   login(email: string, password: string) {
     return this.http
       .post<AuthResponseData>(
-        BASE_URL + 'accounts:signInWithPassword?key=' + API_KEY,
+        `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${FIREBASE_API_KEY}`,
         { email: email, password: password, returnSecureToken: true }
       )
       .pipe(

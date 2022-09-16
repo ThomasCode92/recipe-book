@@ -15,5 +15,3 @@ export const shoppingListReducer = createReducer(
     ingredients: [...state.ingredients, ingredient],
   }))
 );
-
-

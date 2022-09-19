@@ -1,6 +1,9 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
+import { Store } from '@ngrx/store';
 import { Subscription } from 'rxjs';
+
+import * as ShoppingListActions from '../store/shopping-list.actions';
 
 import { ShoppingListService } from '../shopping-list.service';
 
@@ -20,7 +23,10 @@ export class ShoppingEditComponent implements OnInit, OnDestroy {
 
   @ViewChild('form') shoppingListForm!: NgForm;
 
-  constructor(private shoppingListService: ShoppingListService) {}
+  constructor(
+    private store: Store<{ shoppingList: { ingredients: Ingredient[] } }>,
+    private shoppingListService: ShoppingListService
+  ) {}
 
   ngOnInit(): void {
     this.startedEditingSub = this.shoppingListService.startedEditing.subscribe(
@@ -53,7 +59,9 @@ export class ShoppingEditComponent implements OnInit, OnDestroy {
         ingredient
       );
     } else {
-      this.shoppingListService.addIngredient(ingredient);
+      this.store.dispatch(
+        ShoppingListActions.addIngredient({ ingredient: ingredient })
+      );
     }
 
     this.editMode = false;

@@ -17,5 +17,21 @@ export const shoppingListReducer = createReducer(
   on(ShoppingListActions.addIngredients, (state, { ingredients }) => ({
     ...state,
     ingredients: [...state.ingredients, ...ingredients],
-  }))
+  })),
+  on(ShoppingListActions.updateIngredient, (state, { index, ingredient }) => {
+    const oldIngredient = state.ingredients[index];
+    const updatedIngredient = { ...oldIngredient, ...ingredient };
+    const updatedIngredients = [...state.ingredients];
+
+    updatedIngredients[index] = updatedIngredient;
+
+    return { ...state, ingredients: updatedIngredients };
+  }),
+  on(ShoppingListActions.deleteIngredient, (state, { index }) => {
+    const updatedIngredients = state.ingredients.filter(
+      (ingredient, idx) => idx !== index
+    );
+
+    return { ...state, ingredients: updatedIngredients };
+  })
 );

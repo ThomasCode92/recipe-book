@@ -4,7 +4,19 @@ import * as ShoppingListActions from './shopping-list.actions';
 
 import { Ingredient } from '../../shared/ingredient.model';
 
-const initialState = {
+export interface AppState {
+  shoppingList: State;
+}
+
+export interface State {
+  editedIngredient: Ingredient | null;
+  editedIngredientIndex: number;
+  ingredients: Ingredient[];
+}
+
+const initialState: State = {
+  editedIngredient: null,
+  editedIngredientIndex: -1,
   ingredients: [new Ingredient('Apples', 5), new Ingredient('Tomatoes', 10)],
 };
 

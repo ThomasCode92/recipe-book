@@ -22,6 +22,16 @@ const initialState: State = {
 
 export const shoppingListReducer = createReducer(
   initialState,
+  on(ShoppingListActions.startEdit, (state, { index }) => ({
+    ...state,
+    editedIngredient: { ...state.ingredients[index] },
+    editedIngredientIndex: index,
+  })),
+  on(ShoppingListActions.cancelEdit, state => ({
+    ...state,
+    editedIngredient: null,
+    editedIngredientIndex: -1,
+  })),
   on(ShoppingListActions.addIngredient, (state, { ingredient }) => ({
     ...state,
     ingredients: [...state.ingredients, ingredient],

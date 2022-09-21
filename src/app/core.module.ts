@@ -3,12 +3,10 @@ import { NgModule } from '@angular/core';
 
 import { AuthInterceptor } from './auth/auth.interceptor';
 import { RecipeService } from './recipes/recipe.service';
-import { ShoppingListService } from './shopping-list/shopping-list.service';
 
 @NgModule({
   providers: [
     RecipeService,
-    ShoppingListService,
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
   ],
 })

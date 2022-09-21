@@ -3,8 +3,13 @@ import { NgForm } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { Subscription } from 'rxjs';
 
-import * as fromShoppingList from '../store/shopping-list.reducer';
-import * as ShoppingListActions from '../store/shopping-list.actions';
+import {
+  addIngredient,
+  updateIngredient,
+  deleteIngredient,
+  cancelEdit,
+} from '../store/shopping-list.actions';
+import { AppState } from '../store/shopping-list.reducer';
 
 import { Ingredient } from '../../shared/ingredient.model';
 
@@ -21,7 +26,7 @@ export class ShoppingEditComponent implements OnInit, OnDestroy {
 
   @ViewChild('form') shoppingListForm!: NgForm;
 
-  constructor(private store: Store<fromShoppingList.AppState>) {}
+  constructor(private store: Store<AppState>) {}
 
   ngOnInit(): void {
     this.storeSub = this.store.select('shoppingList').subscribe(stateData => {
@@ -41,7 +46,7 @@ export class ShoppingEditComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.storeSub.unsubscribe();
-    this.store.dispatch(ShoppingListActions.cancelEdit());
+    this.store.dispatch(cancelEdit());
   }
 
   onSubmit(form: NgForm) {
@@ -52,14 +57,12 @@ export class ShoppingEditComponent implements OnInit, OnDestroy {
 
     if (this.editMode) {
       this.store.dispatch(
-        ShoppingListActions.updateIngredient({
+        updateIngredient({
           ingredient: ingredient,
         })
       );
     } else {
-      this.store.dispatch(
-        ShoppingListActions.addIngredient({ ingredient: ingredient })
-      );
+      this.store.dispatch(addIngredient({ ingredient: ingredient }));
     }
 
     this.editMode = false;
@@ -67,7 +70,7 @@ export class ShoppingEditComponent implements OnInit, OnDestroy {
   }
 
   onDeleteItem() {
-    this.store.dispatch(ShoppingListActions.deleteIngredient());
+    this.store.dispatch(deleteIngredient());
 
     this.onClearForm();
   }
@@ -75,6 +78,6 @@ export class ShoppingEditComponent implements OnInit, OnDestroy {
   onClearForm() {
     this.editMode = false;
     this.shoppingListForm.reset();
-    this.store.dispatch(ShoppingListActions.cancelEdit());
+    this.store.dispatch(cancelEdit());
   }
 }

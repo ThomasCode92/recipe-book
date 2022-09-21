@@ -9,7 +9,7 @@ import {
   deleteIngredient,
   cancelEdit,
 } from '../store/shopping-list.actions';
-import { AppState } from '../store/shopping-list.reducer';
+import { AppState } from '../../store/app.reducer';
 
 import { Ingredient } from '../../shared/ingredient.model';
 

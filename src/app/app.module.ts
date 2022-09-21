@@ -10,14 +10,14 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HeaderComponent } from './header/header.component';
 
-import { shoppingListReducer } from './shopping-list/store/shopping-list.reducer';
+import { appReducer } from './store/app.reducer';
 
 @NgModule({
   declarations: [AppComponent, HeaderComponent],
   imports: [
     BrowserModule,
     HttpClientModule,
-    StoreModule.forRoot({shoppingList: shoppingListReducer}),
+    StoreModule.forRoot(appReducer),
     CoreModule,
     SharedModule,
     AppRoutingModule,

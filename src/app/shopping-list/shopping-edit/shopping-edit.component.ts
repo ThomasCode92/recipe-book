@@ -15,7 +15,6 @@ import { Ingredient } from '../../shared/ingredient.model';
 })
 export class ShoppingEditComponent implements OnInit, OnDestroy {
   private storeSub!: Subscription;
-  private editedItemIndex!: number;
   private editedItem!: Ingredient;
 
   editMode = false;
@@ -28,7 +27,6 @@ export class ShoppingEditComponent implements OnInit, OnDestroy {
     this.storeSub = this.store.select('shoppingList').subscribe(stateData => {
       if (stateData.editedIngredientIndex > -1) {
         this.editMode = true;
-        this.editedItemIndex = stateData.editedIngredientIndex;
         this.editedItem = stateData.editedIngredient!;
 
         this.shoppingListForm.setValue({
@@ -55,7 +53,6 @@ export class ShoppingEditComponent implements OnInit, OnDestroy {
     if (this.editMode) {
       this.store.dispatch(
         ShoppingListActions.updateIngredient({
-          index: this.editedItemIndex,
           ingredient: ingredient,
         })
       );
@@ -70,9 +67,7 @@ export class ShoppingEditComponent implements OnInit, OnDestroy {
   }
 
   onDeleteItem() {
-    this.store.dispatch(
-      ShoppingListActions.deleteIngredient({ index: this.editedItemIndex })
-    );
+    this.store.dispatch(ShoppingListActions.deleteIngredient());
 
     this.onClearForm();
   }

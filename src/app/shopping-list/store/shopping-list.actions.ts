@@ -21,10 +21,9 @@ export const addIngredients = createAction(
 
 export const updateIngredient = createAction(
   '[Shopping List] Update Ingredient',
-  props<{ index: number; ingredient: Ingredient }>()
+  props<{ ingredient: Ingredient }>()
 );
 
 export const deleteIngredient = createAction(
-  '[Shopping List] Delete Ingredient',
-  props<{ index: number }>()
+  '[Shopping List] Delete Ingredient'
 );

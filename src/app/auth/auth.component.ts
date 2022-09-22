@@ -1,7 +1,11 @@
 import { Component, OnDestroy, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
+import { Store } from '@ngrx/store';
 import { Observable, Subscription } from 'rxjs';
+
+import { loginStart } from './store/auth.actions';
+import { AppState } from '../store/app.reducer';
 
 import { AlertComponent } from '../shared/alert/alert.component';
 import { PlaceholderDirective } from '../shared/placeholder.directive';
@@ -21,7 +25,11 @@ export class AuthComponent implements OnDestroy {
 
   @ViewChild(PlaceholderDirective) alertHost!: PlaceholderDirective;
 
-  constructor(private router: Router, private authService: AuthService) {}
+  constructor(
+    private store: Store<AppState>,
+    private router: Router,
+    private authService: AuthService
+  ) {}
 
   ngOnDestroy(): void {
     this.closeSub?.unsubscribe();
@@ -46,12 +54,12 @@ export class AuthComponent implements OnDestroy {
     let authObs: Observable<AuthResponseData>;
 
     if (this.isLoginMode) {
-      authObs = this.authService.login(email, password);
+      this.store.dispatch(loginStart({ email: email, password: password }));
     } else {
       authObs = this.authService.signup(email, password);
     }
 
-    authObs.subscribe({
+    authObs!.subscribe({
       next: responseData => {
         console.log(responseData);
         this.isLoading = false;

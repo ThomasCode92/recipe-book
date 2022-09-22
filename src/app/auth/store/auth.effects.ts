@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { catchError, map, of, switchMap, tap, throwError } from 'rxjs';
@@ -29,7 +29,28 @@ const FIREBASE_API_KEY = environment.firebaseAPIKey;
 @Injectable()
 export class AuthEffects {
   authSignup = createEffect(() => {
-    return this.actions$.pipe(ofType(signupStart));
+    return this.actions$.pipe(
+      ofType(signupStart),
+      switchMap(authData => {
+        return this.http
+          .post<AuthResponseData>(
+            `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${FIREBASE_API_KEY}`,
+            {
+              email: authData.email,
+              password: authData.password,
+              returnSecureToken: true,
+            }
+          )
+          .pipe(
+            map(responseData => {
+              return this.handleAuthentication(responseData);
+            }),
+            catchError(errorRes => {
+              return this.handleError(errorRes);
+            })
+          );
+      })
+    );
   });
 
   authLogin = createEffect(() => {
@@ -47,39 +68,10 @@ export class AuthEffects {
           )
           .pipe(
             map(responseData => {
-              const expiresIn = parseInt(responseData.expiresIn);
-              const userId = responseData.localId;
-              const email = responseData.email;
-              const token = responseData.idToken;
-
-              const currentTime = new Date().getTime(); // current time in milliseconds
-              const expirationDate = new Date(currentTime + expiresIn);
-
-              const user = new User(userId, email, token, expirationDate);
-
-              return authenticateSuccess({ user: user });
+              return this.handleAuthentication(responseData);
             }),
             catchError(errorRes => {
-              let error = 'An unkown error occurred!';
-
-              if (!errorRes.error || !errorRes.error.error)
-                return of(authenticateFail({ message: error }));
-
-              const errorMessage = errorRes.error.error.message;
-
-              switch (errorMessage) {
-                case 'EMAIL_EXISTS':
-                  error = 'This email exists already!';
-                  break;
-                case 'EMAIL_NOT_FOUND':
-                case 'INVALID_PASSWORD':
-                  error = 'Invalid credentials!';
-                  break;
-                default:
-                  error = 'An unkown error occurred!';
-              }
-
-              return of(authenticateFail({ message: error }));
+              return this.handleError(errorRes);
             })
           );
       })
@@ -103,4 +95,41 @@ export class AuthEffects {
     private http: HttpClient,
     private router: Router
   ) {}
+
+  private handleAuthentication(responseData: AuthResponseData) {
+    const expiresIn = parseInt(responseData.expiresIn);
+    const userId = responseData.localId;
+    const email = responseData.email;
+    const token = responseData.idToken;
+
+    const currentTime = new Date().getTime(); // current time in milliseconds
+    const expirationDate = new Date(currentTime + expiresIn);
+
+    const user = new User(userId, email, token, expirationDate);
+
+    return authenticateSuccess({ user: user });
+  }
+
+  private handleError(errorRes: HttpErrorResponse) {
+    let error = 'An unkown error occurred!';
+
+    if (!errorRes.error || !errorRes.error.error)
+      return of(authenticateFail({ message: error }));
+
+    const errorMessage = errorRes.error.error.message;
+
+    switch (errorMessage) {
+      case 'EMAIL_EXISTS':
+        error = 'This email exists already!';
+        break;
+      case 'EMAIL_NOT_FOUND':
+      case 'INVALID_PASSWORD':
+        error = 'Invalid credentials!';
+        break;
+      default:
+        error = 'An unkown error occurred!';
+    }
+
+    return of(authenticateFail({ message: error }));
+  }
 }

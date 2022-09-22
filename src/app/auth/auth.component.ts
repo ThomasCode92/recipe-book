@@ -1,15 +1,13 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { Observable, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 
-import { loginStart } from './store/auth.actions';
+import { loginStart, signupStart } from './store/auth.actions';
 import { AppState } from '../store/app.reducer';
 
 import { AlertComponent } from '../shared/alert/alert.component';
 import { PlaceholderDirective } from '../shared/placeholder.directive';
-import { AuthResponseData, AuthService } from './auth.service';
 
 @Component({
   selector: 'app-auth',
@@ -25,11 +23,7 @@ export class AuthComponent implements OnInit, OnDestroy {
 
   @ViewChild(PlaceholderDirective) alertHost!: PlaceholderDirective;
 
-  constructor(
-    private store: Store<AppState>,
-    private router: Router,
-    private authService: AuthService
-  ) {}
+  constructor(private store: Store<AppState>) {}
 
   ngOnInit(): void {
     this.store.select('auth').subscribe(authData => {
@@ -57,31 +51,14 @@ export class AuthComponent implements OnInit, OnDestroy {
   onSubmit(form: NgForm) {
     if (!form.valid) return;
 
-    this.isLoading = true;
-
     const email = form.value.email;
     const password = form.value.password;
-
-    let authObs: Observable<AuthResponseData>;
 
     if (this.isLoginMode) {
       this.store.dispatch(loginStart({ email: email, password: password }));
     } else {
-      authObs = this.authService.signup(email, password);
+      this.store.dispatch(signupStart({ email: email, password: password }));
     }
-
-    // authObs!.subscribe({
-    //   next: responseData => {
-    //     console.log(responseData);
-    //     this.isLoading = false;
-    //     this.router.navigate(['/recipes']);
-    //   },
-    //   error: errorMessage => {
-    //     console.log(errorMessage);
-    //     this.isLoading = false;
-    //     this.showErrorAlert(errorMessage);
-    //   },
-    // });
 
     form.reset();
   }

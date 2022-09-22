@@ -13,6 +13,8 @@ import {
   autoLogin,
 } from './auth.actions';
 
+import { AuthService } from '../auth.service';
+
 import { User } from '../user.model';
 
 import { environment } from '../../../environments/environment';
@@ -102,10 +104,11 @@ export class AuthEffects {
         );
 
         if (user.token) {
-          // const expirationDuration =
-          //   new Date(userData._tokenExpirationDate).getTime() -
-          //   new Date().getTime();
+          const expirationDuration =
+            new Date(userData._tokenExpirationDate).getTime() -
+            new Date().getTime();
 
+          this.authService.setLogoutTimer(expirationDuration);
           return authenticateSuccess({ user: user });
         }
 
@@ -119,6 +122,7 @@ export class AuthEffects {
       return this.actions$.pipe(
         ofType(logout),
         tap(() => {
+          this.authService.clearLogoutTimer();
           localStorage.removeItem('userData');
         })
       );
@@ -141,7 +145,8 @@ export class AuthEffects {
   constructor(
     private actions$: Actions,
     private http: HttpClient,
-    private router: Router
+    private router: Router,
+    private authService: AuthService
   ) {}
 
   private handleAuthentication(responseData: AuthResponseData) {
@@ -156,6 +161,7 @@ export class AuthEffects {
     const user = new User(userId, email, token, expirationDate);
 
     localStorage.setItem('userData', JSON.stringify(user));
+    this.authService.setLogoutTimer(expiresIn * 1000);
 
     return authenticateSuccess({ user: user });
   }

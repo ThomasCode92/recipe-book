@@ -23,13 +23,13 @@ export const authReducer = createReducer(
     loading: true,
     authError: null,
   })),
-  on(AuthActions.loginFail, (state, { message }) => ({
+  on(AuthActions.authenticateFail, (state, { message }) => ({
     ...state,
     loading: false,
     user: null,
     authError: message,
   })),
-  on(AuthActions.login, (state, { user }) => ({
+  on(AuthActions.authenticateSuccess, (state, { user }) => ({
     ...state,
     loading: false,
     user: user,

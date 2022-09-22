@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { catchError, tap, throwError } from 'rxjs';
 import { Store } from '@ngrx/store';
 
-import { login, logout } from './store/auth.actions';
+import { authenticateSuccess, logout } from './store/auth.actions';
 import { AppState } from '../store/app.reducer';
 
 import { User } from './user.model';
@@ -97,7 +97,7 @@ export class AuthService {
         new Date(userData._tokenExpirationDate).getTime() -
         new Date().getTime();
 
-      this.store.dispatch(login({ user: user }));
+      this.store.dispatch(authenticateSuccess({ user: user }));
       this.autoLogout(expirationDuration);
     }
   }
@@ -130,7 +130,7 @@ export class AuthService {
 
     const user = new User(userId, email, token, expirationDate);
 
-    this.store.dispatch(login({ user: user }));
+    this.store.dispatch(authenticateSuccess({ user: user }));
     this.autoLogout(expiresIn);
 
     localStorage.setItem('userData', JSON.stringify(user));

@@ -4,7 +4,12 @@ import { Router } from '@angular/router';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { catchError, map, of, switchMap, tap, throwError } from 'rxjs';
 
-import { login, loginFail, loginStart } from './auth.actions';
+import {
+  authenticateSuccess,
+  authenticateFail,
+  loginStart,
+  signupStart,
+} from './auth.actions';
 
 import { User } from '../user.model';
 
@@ -23,6 +28,10 @@ const FIREBASE_API_KEY = environment.firebaseAPIKey;
 
 @Injectable()
 export class AuthEffects {
+  authSignup = createEffect(() => {
+    return this.actions$.pipe(ofType(signupStart));
+  });
+
   authLogin = createEffect(() => {
     return this.actions$.pipe(
       ofType(loginStart),
@@ -48,14 +57,15 @@ export class AuthEffects {
 
               const user = new User(userId, email, token, expirationDate);
 
-              return login({ user: user });
+              return authenticateSuccess({ user: user });
             }),
             catchError(errorRes => {
+              let error = 'An unkown error occurred!';
+
               if (!errorRes.error || !errorRes.error.error)
-                return of(loginFail({ message: 'An unkown error occurred!' }));
+                return of(authenticateFail({ message: error }));
 
               const errorMessage = errorRes.error.error.message;
-              let error: string;
 
               switch (errorMessage) {
                 case 'EMAIL_EXISTS':
@@ -69,7 +79,7 @@ export class AuthEffects {
                   error = 'An unkown error occurred!';
               }
 
-              return of(loginFail({ message: error }));
+              return of(authenticateFail({ message: error }));
             })
           );
       })
@@ -79,7 +89,7 @@ export class AuthEffects {
   authSucces = createEffect(
     () => {
       return this.actions$.pipe(
-        ofType(login),
+        ofType(authenticateSuccess),
         tap(() => {
           this.router.navigate(['/']);
         })

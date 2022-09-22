@@ -3,7 +3,6 @@ import { createReducer, on } from '@ngrx/store';
 import * as AuthActions from './auth.actions';
 
 import { User } from '../user.model';
-import { state } from '@angular/animations';
 
 export interface State {
   loading: boolean;

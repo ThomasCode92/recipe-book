@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { catchError, map, of, switchMap, tap, throwError } from 'rxjs';
+import { catchError, map, of, switchMap, tap } from 'rxjs';
 
 import {
   authenticateSuccess,
@@ -19,7 +19,7 @@ import { User } from '../user.model';
 
 import { environment } from '../../../environments/environment';
 
-export interface AuthResponseData {
+interface AuthResponseData {
   idToken: string;
   email: string;
   refreshToken: string;

@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { catchError, map, of, switchMap } from 'rxjs';
+import { catchError, map, of, switchMap, tap, throwError } from 'rxjs';
 
-import { login, loginStart } from './auth.actions';
+import { login, loginFail, loginStart } from './auth.actions';
 
 import { User } from '../user.model';
 
@@ -49,14 +50,47 @@ export class AuthEffects {
 
               return login({ user: user });
             }),
-            catchError(error => {
-              // ...
-              return of();
+            catchError(errorRes => {
+              if (!errorRes.error || !errorRes.error.error)
+                return of(loginFail({ message: 'An unkown error occurred!' }));
+
+              const errorMessage = errorRes.error.error.message;
+              let error: string;
+
+              switch (errorMessage) {
+                case 'EMAIL_EXISTS':
+                  error = 'This email exists already!';
+                  break;
+                case 'EMAIL_NOT_FOUND':
+                case 'INVALID_PASSWORD':
+                  error = 'Invalid credentials!';
+                  break;
+                default:
+                  error = 'An unkown error occurred!';
+              }
+
+              return of(loginFail({ message: error }));
             })
           );
       })
     );
   });
 
-  constructor(private actions$: Actions, private http: HttpClient) {}
+  authSucces = createEffect(
+    () => {
+      return this.actions$.pipe(
+        ofType(login),
+        tap(() => {
+          this.router.navigate(['/']);
+        })
+      );
+    },
+    { dispatch: false }
+  );
+
+  constructor(
+    private actions$: Actions,
+    private http: HttpClient,
+    private router: Router
+  ) {}
 }

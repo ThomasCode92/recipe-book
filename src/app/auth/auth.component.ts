@@ -35,6 +35,10 @@ export class AuthComponent implements OnInit, OnDestroy {
     this.store.select('auth').subscribe(authData => {
       this.isLoading = authData.loading;
       this.error = authData.authError;
+
+      if (this.error) {
+        this.showErrorAlert(this.error);
+      }
     });
   }
 
@@ -66,18 +70,18 @@ export class AuthComponent implements OnInit, OnDestroy {
       authObs = this.authService.signup(email, password);
     }
 
-    authObs!.subscribe({
-      next: responseData => {
-        console.log(responseData);
-        this.isLoading = false;
-        this.router.navigate(['/recipes']);
-      },
-      error: errorMessage => {
-        console.log(errorMessage);
-        this.isLoading = false;
-        this.showErrorAlert(errorMessage);
-      },
-    });
+    // authObs!.subscribe({
+    //   next: responseData => {
+    //     console.log(responseData);
+    //     this.isLoading = false;
+    //     this.router.navigate(['/recipes']);
+    //   },
+    //   error: errorMessage => {
+    //     console.log(errorMessage);
+    //     this.isLoading = false;
+    //     this.showErrorAlert(errorMessage);
+    //   },
+    // });
 
     form.reset();
   }

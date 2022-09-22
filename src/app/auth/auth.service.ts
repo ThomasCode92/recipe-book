@@ -22,11 +22,7 @@ export interface AuthResponseData {
 export class AuthService {
   private tokeExpirationTimer: any;
 
-  constructor(
-    private store: Store<AppState>,
-    private http: HttpClient,
-    private router: Router
-  ) {}
+  constructor(private store: Store<AppState>) {}
 
   autoLogin() {
     const loadedUser = localStorage.getItem('userData');
@@ -69,44 +65,5 @@ export class AuthService {
     this.tokeExpirationTimer = setTimeout(() => {
       this.logout();
     }, expirationDuration);
-  }
-
-  private handleAuthentication(
-    userId: string,
-    email: string,
-    token: string,
-    expiresIn: number
-  ) {
-    const currentTime = new Date().getTime(); // current time in milliseconds
-    const expirationDate = new Date(currentTime + expiresIn);
-
-    const user = new User(userId, email, token, expirationDate);
-
-    this.store.dispatch(authenticateSuccess({ user: user }));
-    this.autoLogout(expiresIn);
-
-    localStorage.setItem('userData', JSON.stringify(user));
-  }
-
-  private handleError(errorRes: HttpErrorResponse) {
-    if (!errorRes.error || !errorRes.error.error)
-      return throwError(() => errorRes);
-
-    const errorMessage = errorRes.error.error.message;
-    let error: string;
-
-    switch (errorMessage) {
-      case 'EMAIL_EXISTS':
-        error = 'This email exists already!';
-        break;
-      case 'EMAIL_NOT_FOUND':
-      case 'INVALID_PASSWORD':
-        error = 'Invalid credentials!';
-        break;
-      default:
-        error = 'An unkown error occurred!';
-    }
-
-    return throwError(() => error);
   }
 }

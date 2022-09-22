@@ -10,6 +10,7 @@ import {
   loginStart,
   signupStart,
   logout,
+  autoLogin,
 } from './auth.actions';
 
 import { User } from '../user.model';
@@ -79,6 +80,52 @@ export class AuthEffects {
     );
   });
 
+  authAutoLogin = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(autoLogin),
+      map(() => {
+        const loadedUser = localStorage.getItem('userData');
+        if (!loadedUser) return { type: 'DUMMY' };
+
+        const userData: {
+          id: string;
+          email: string;
+          _token: string;
+          _tokenExpirationDate: string;
+        } = JSON.parse(loadedUser);
+
+        const user = new User(
+          userData.id,
+          userData.email,
+          userData._token,
+          new Date(userData._tokenExpirationDate)
+        );
+
+        if (user.token) {
+          // const expirationDuration =
+          //   new Date(userData._tokenExpirationDate).getTime() -
+          //   new Date().getTime();
+
+          return authenticateSuccess({ user: user });
+        }
+
+        return { type: 'DUMMY' };
+      })
+    );
+  });
+
+  authLogout = createEffect(
+    () => {
+      return this.actions$.pipe(
+        ofType(logout),
+        tap(() => {
+          localStorage.removeItem('userData');
+        })
+      );
+    },
+    { dispatch: false }
+  );
+
   authRedirect = createEffect(
     () => {
       return this.actions$.pipe(
@@ -104,9 +151,11 @@ export class AuthEffects {
     const token = responseData.idToken;
 
     const currentTime = new Date().getTime(); // current time in milliseconds
-    const expirationDate = new Date(currentTime + expiresIn);
+    const expirationDate = new Date(currentTime + expiresIn * 1000);
 
     const user = new User(userId, email, token, expirationDate);
+
+    localStorage.setItem('userData', JSON.stringify(user));
 
     return authenticateSuccess({ user: user });
   }

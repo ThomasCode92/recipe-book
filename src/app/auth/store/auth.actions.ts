@@ -22,6 +22,8 @@ export const authenticateFail = createAction(
   props<{ message: string }>()
 );
 
+export const autoLogin = createAction('[Auth] Auto login');
+
 export const logout = createAction('[Auth] Logout');
 
 export const clearError = createAction('[Auth] Clear error');

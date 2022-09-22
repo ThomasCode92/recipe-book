@@ -1,4 +1,4 @@
-import { Component, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
@@ -16,7 +16,7 @@ import { AuthResponseData, AuthService } from './auth.service';
   templateUrl: './auth.component.html',
   styleUrls: ['./auth.component.css'],
 })
-export class AuthComponent implements OnDestroy {
+export class AuthComponent implements OnInit, OnDestroy {
   private closeSub?: Subscription;
 
   isLoginMode = true;
@@ -30,6 +30,13 @@ export class AuthComponent implements OnDestroy {
     private router: Router,
     private authService: AuthService
   ) {}
+
+  ngOnInit(): void {
+    this.store.select('auth').subscribe(authData => {
+      this.isLoading = authData.loading;
+      this.error = authData.authError;
+    });
+  }
 
   ngOnDestroy(): void {
     this.closeSub?.unsubscribe();

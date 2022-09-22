@@ -3,7 +3,7 @@ import { NgForm } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { Subscription } from 'rxjs';
 
-import { loginStart, signupStart } from './store/auth.actions';
+import { clearError, loginStart, signupStart } from './store/auth.actions';
 import { AppState } from '../store/app.reducer';
 
 import { AlertComponent } from '../shared/alert/alert.component';
@@ -16,6 +16,7 @@ import { PlaceholderDirective } from '../shared/placeholder.directive';
 })
 export class AuthComponent implements OnInit, OnDestroy {
   private closeSub?: Subscription;
+  private storeSub!: Subscription;
 
   isLoginMode = true;
   isLoading = false;
@@ -26,7 +27,7 @@ export class AuthComponent implements OnInit, OnDestroy {
   constructor(private store: Store<AppState>) {}
 
   ngOnInit(): void {
-    this.store.select('auth').subscribe(authData => {
+    this.storeSub = this.store.select('auth').subscribe(authData => {
       this.isLoading = authData.loading;
       this.error = authData.authError;
 
@@ -38,6 +39,7 @@ export class AuthComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.closeSub?.unsubscribe();
+    this.storeSub.unsubscribe();
   }
 
   onSwitchMode() {
@@ -45,7 +47,7 @@ export class AuthComponent implements OnInit, OnDestroy {
   }
 
   onHandleError() {
-    this.error = null;
+    this.store.dispatch(clearError());
   }
 
   onSubmit(form: NgForm) {

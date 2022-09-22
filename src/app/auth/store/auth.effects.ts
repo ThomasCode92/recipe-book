@@ -9,6 +9,7 @@ import {
   authenticateFail,
   loginStart,
   signupStart,
+  logout,
 } from './auth.actions';
 
 import { User } from '../user.model';
@@ -78,10 +79,10 @@ export class AuthEffects {
     );
   });
 
-  authSucces = createEffect(
+  authRedirect = createEffect(
     () => {
       return this.actions$.pipe(
-        ofType(authenticateSuccess),
+        ofType(authenticateSuccess, logout),
         tap(() => {
           this.router.navigate(['/']);
         })

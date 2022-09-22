@@ -23,3 +23,5 @@ export const authenticateFail = createAction(
 );
 
 export const logout = createAction('[Auth] Logout');
+
+export const clearError = createAction('[Auth] Clear error');

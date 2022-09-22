@@ -2,9 +2,9 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Subscription } from 'rxjs';
 
+import { logout } from '../auth/store/auth.actions';
 import { AppState } from '../store/app.reducer';
 
-import { AuthService } from '../auth/auth.service';
 import { DataStorageService } from '../shared/data-storage.service';
 
 @Component({
@@ -13,26 +13,25 @@ import { DataStorageService } from '../shared/data-storage.service';
   styleUrls: ['./header.component.css'],
 })
 export class HeaderComponent implements OnInit, OnDestroy {
-  private userSub!: Subscription;
+  private storeSub!: Subscription;
 
   collapsed = true;
   isAuthenticated = false;
 
   constructor(
     private store: Store<AppState>,
-    private authService: AuthService,
     private dataStorageService: DataStorageService
   ) {}
 
   ngOnInit(): void {
-    this.userSub = this.store.select('auth').subscribe(authstate => {
+    this.storeSub = this.store.select('auth').subscribe(authstate => {
       const user = authstate.user;
       this.isAuthenticated = !!user;
     });
   }
 
   ngOnDestroy(): void {
-    this.userSub.unsubscribe();
+    this.storeSub.unsubscribe();
   }
 
   onFetchData() {
@@ -44,6 +43,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   onLogout() {
-    this.authService.logout();
+    this.store.dispatch(logout());
   }
 }

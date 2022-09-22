@@ -1,15 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { catchError, tap, throwError } from 'rxjs';
+import { throwError } from 'rxjs';
 import { Store } from '@ngrx/store';
 
 import { authenticateSuccess, logout } from './store/auth.actions';
 import { AppState } from '../store/app.reducer';
 
 import { User } from './user.model';
-
-import { environment } from '../../environments/environment';
 
 export interface AuthResponseData {
   idToken: string;
@@ -20,8 +18,6 @@ export interface AuthResponseData {
   registered?: boolean;
 }
 
-const FIREBASE_API_KEY = environment.firebaseAPIKey;
-
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private tokeExpirationTimer: any;
@@ -31,48 +27,6 @@ export class AuthService {
     private http: HttpClient,
     private router: Router
   ) {}
-
-  signup(email: string, password: string) {
-    return this.http
-      .post<AuthResponseData>(
-        `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${FIREBASE_API_KEY}`,
-        {
-          email: email,
-          password: password,
-          returnSecureToken: true,
-        }
-      )
-      .pipe(
-        catchError(this.handleError),
-        tap(resData => {
-          this.handleAuthentication(
-            resData.localId,
-            resData.email,
-            resData.idToken,
-            parseInt(resData.expiresIn) * 1000
-          );
-        })
-      );
-  }
-
-  login(email: string, password: string) {
-    return this.http
-      .post<AuthResponseData>(
-        `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${FIREBASE_API_KEY}`,
-        { email: email, password: password, returnSecureToken: true }
-      )
-      .pipe(
-        catchError(this.handleError),
-        tap(resData => {
-          this.handleAuthentication(
-            resData.localId,
-            resData.email,
-            resData.idToken,
-            parseInt(resData.expiresIn) * 1000
-          );
-        })
-      );
-  }
 
   autoLogin() {
     const loadedUser = localStorage.getItem('userData');
@@ -109,8 +63,6 @@ export class AuthService {
     if (this.tokeExpirationTimer) {
       clearTimeout(this.tokeExpirationTimer);
     }
-
-    this.router.navigate(['/auth']);
   }
 
   autoLogout(expirationDuration: number) {

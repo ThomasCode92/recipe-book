@@ -2,6 +2,10 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { BehaviorSubject, catchError, tap, throwError } from 'rxjs';
+import { Store } from '@ngrx/store';
+
+import { login, logout } from './store/auth.actions';
+import { AppState } from '../store/app.reducer';
 
 import { User } from './user.model';
 
@@ -24,7 +28,11 @@ export class AuthService {
 
   user = new BehaviorSubject<User | null>(null);
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(
+    private store: Store<AppState>,
+    private http: HttpClient,
+    private router: Router
+  ) {}
 
   signup(email: string, password: string) {
     return this.http
@@ -91,13 +99,13 @@ export class AuthService {
         new Date(userData._tokenExpirationDate).getTime() -
         new Date().getTime();
 
-      this.user.next(user);
+      this.store.dispatch(login({ user: user }));
       this.autoLogout(expirationDuration);
     }
   }
 
   logout() {
-    this.user.next(null);
+    this.store.dispatch(logout());
     localStorage.removeItem('userData');
 
     if (this.tokeExpirationTimer) {
@@ -124,7 +132,7 @@ export class AuthService {
 
     const user = new User(userId, email, token, expirationDate);
 
-    this.user.next(user);
+    this.store.dispatch(login({ user: user }));
     this.autoLogout(expiresIn);
 
     localStorage.setItem('userData', JSON.stringify(user));

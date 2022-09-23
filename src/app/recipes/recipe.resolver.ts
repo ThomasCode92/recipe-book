@@ -4,9 +4,9 @@ import {
   Resolve,
   RouterStateSnapshot,
 } from '@angular/router';
-import { Store } from '@ngrx/store';
+import { ActionCreator, Store } from '@ngrx/store';
 import { Actions, ofType } from '@ngrx/effects';
-import { map, Observable, switchMap, take } from 'rxjs';
+import { map, Observable, of, switchMap, take } from 'rxjs';
 
 import { fetchRecipes, setRecipes } from './store/recipe.actions';
 import { AppState } from '../store/app.reducer';
@@ -20,18 +20,19 @@ export class RecipeResolver implements Resolve<Recipe[]> {
   resolve(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
-  ): Observable<Recipe[]> | Promise<Recipe[]> | Recipe[] {
-    this.store.dispatch(fetchRecipes());
-
-    return this.actions$.pipe(
-      ofType(setRecipes),
+  ): Observable<any> | Promise<Recipe[]> | Recipe[] {
+    return this.store.select('recipes').pipe(
       take(1),
-      switchMap(() => {
-        return this.store.select('recipes').pipe(
-          map(recipeState => {
-            return recipeState.recipes;
-          })
-        );
+      map(recipeData => {
+        return recipeData.recipes;
+      }),
+      switchMap(recipes => {
+        if (recipes.length === 0) {
+          this.store.dispatch(fetchRecipes());
+          return this.actions$.pipe(ofType(setRecipes), take(1));
+        } else {
+          return of(recipes);
+        }
       })
     );
   }

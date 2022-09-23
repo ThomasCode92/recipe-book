@@ -1,12 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { map } from 'rxjs';
+import { map, Subscription } from 'rxjs';
 
+import { addRecipe, updateRecipe } from '../store/recipe.actions';
 import { AppState } from 'src/app/store/app.reducer';
-
-import { RecipeService } from '../recipe.service';
 
 import { Recipe } from '../recipe.model';
 
@@ -15,7 +14,9 @@ import { Recipe } from '../recipe.model';
   templateUrl: './recipe-edit.component.html',
   styleUrls: ['./recipe-edit.component.css'],
 })
-export class RecipeEditComponent implements OnInit {
+export class RecipeEditComponent implements OnInit, OnDestroy {
+  private storeSub: Subscription | undefined;
+
   recipeId!: number;
   recipeForm!: FormGroup;
   editMode = false;
@@ -27,8 +28,7 @@ export class RecipeEditComponent implements OnInit {
   constructor(
     private store: Store<AppState>,
     private route: ActivatedRoute,
-    private router: Router,
-    private recipeService: RecipeService
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -40,6 +40,10 @@ export class RecipeEditComponent implements OnInit {
 
       this.initForm();
     });
+  }
+
+  ngOnDestroy(): void {
+    this.storeSub?.unsubscribe();
   }
 
   onAddIngredient() {
@@ -75,9 +79,11 @@ export class RecipeEditComponent implements OnInit {
     const newRecipe = new Recipe(name, description, imagePath, ingredients);
 
     if (this.editMode) {
-      this.recipeService.updateRecipe(this.recipeId, newRecipe);
+      this.store.dispatch(
+        updateRecipe({ index: this.recipeId, newRecipe: newRecipe })
+      );
     } else {
-      this.recipeService.addRecipe(newRecipe);
+      this.store.dispatch(addRecipe({ recipe: newRecipe }));
     }
 
     this.router.navigate(['../'], { relativeTo: this.route });
@@ -94,7 +100,7 @@ export class RecipeEditComponent implements OnInit {
     let recipeIngredients = new FormArray<FormGroup>([]);
 
     if (this.editMode) {
-      this.store
+      this.storeSub = this.store
         .select('recipes')
         .pipe(
           map(recipeData => {

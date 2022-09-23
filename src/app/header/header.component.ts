@@ -3,10 +3,8 @@ import { Store } from '@ngrx/store';
 import { Subscription } from 'rxjs';
 
 import { logout } from '../auth/store/auth.actions';
-import { fetchRecipes } from '../recipes/store/recipe.actions';
+import { fetchRecipes, storeRecipes } from '../recipes/store/recipe.actions';
 import { AppState } from '../store/app.reducer';
-
-import { DataStorageService } from '../shared/data-storage.service';
 
 @Component({
   selector: 'app-header',
@@ -19,10 +17,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   collapsed = true;
   isAuthenticated = false;
 
-  constructor(
-    private store: Store<AppState>,
-    private dataStorageService: DataStorageService
-  ) {}
+  constructor(private store: Store<AppState>) {}
 
   ngOnInit(): void {
     this.storeSub = this.store.select('auth').subscribe(authstate => {
@@ -40,7 +35,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   onSaveData() {
-    this.dataStorageService.storeRecipes();
+    this.store.dispatch(storeRecipes());
   }
 
   onLogout() {

@@ -1,11 +1,13 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Store } from '@ngrx/store';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { map, switchMap } from 'rxjs';
+import { map, switchMap, withLatestFrom } from 'rxjs';
 
-import { fetchRecipes, setRecipes } from './recipe.actions';
+import { fetchRecipes, setRecipes, storeRecipes } from './recipe.actions';
 
 import { Recipe } from '../recipe.model';
+import { AppState } from 'src/app/store/app.reducer';
 
 const BASE_URL =
   'https://ng-recipe-book-ffe59-default-rtdb.europe-west1.firebasedatabase.app/';
@@ -32,5 +34,23 @@ export class RecipeEffects {
     );
   });
 
-  constructor(private actions$: Actions, private http: HttpClient) {}
+  storeRecipes = createEffect(
+    () => {
+      return this.actions$.pipe(
+        ofType(storeRecipes),
+        withLatestFrom(this.store.select('recipes')),
+        switchMap(([actionData, recipesData]) => {
+          const recipes = recipesData.recipes;
+          return this.http.put(BASE_URL + 'recipes.json', recipes);
+        })
+      );
+    },
+    { dispatch: false }
+  );
+
+  constructor(
+    private store: Store<AppState>,
+    private actions$: Actions,
+    private http: HttpClient
+  ) {}
 }

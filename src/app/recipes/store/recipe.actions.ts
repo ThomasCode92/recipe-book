@@ -4,6 +4,8 @@ import { Recipe } from '../recipe.model';
 
 export const fetchRecipes = createAction('[Recipes] Fetch recipes');
 
+export const storeRecipes = createAction('[Recipes] Store recipes')
+
 export const setRecipes = createAction(
   '[Recipes] Set recipes',
   props<{ recipes: Recipe[] }>()

@@ -109,7 +109,7 @@ export class AuthEffects {
             new Date().getTime();
 
           this.authService.setLogoutTimer(expirationDuration);
-          return authenticateSuccess({ user: user });
+          return authenticateSuccess({ user: user, redirect: false });
         }
 
         return { type: 'DUMMY' };
@@ -134,8 +134,14 @@ export class AuthEffects {
     () => {
       return this.actions$.pipe(
         ofType(authenticateSuccess, logout),
-        tap(() => {
-          this.router.navigate(['/']);
+        tap(authAction => {
+          if (
+            (authAction.type === authenticateSuccess.type &&
+              authAction.redirect) ||
+            authAction.type === logout.type
+          ) {
+            this.router.navigate(['/']);
+          }
         })
       );
     },
@@ -163,7 +169,7 @@ export class AuthEffects {
     localStorage.setItem('userData', JSON.stringify(user));
     this.authService.setLogoutTimer(expiresIn * 1000);
 
-    return authenticateSuccess({ user: user });
+    return authenticateSuccess({ user: user, redirect: true });
   }
 
   private handleError(errorRes: HttpErrorResponse) {

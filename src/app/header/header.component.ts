@@ -3,6 +3,7 @@ import { Store } from '@ngrx/store';
 import { Subscription } from 'rxjs';
 
 import { logout } from '../auth/store/auth.actions';
+import { fetchRecipes } from '../recipes/store/recipe.actions';
 import { AppState } from '../store/app.reducer';
 
 import { DataStorageService } from '../shared/data-storage.service';
@@ -35,7 +36,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   onFetchData() {
-    this.dataStorageService.fetchRecipes().subscribe();
+    this.store.dispatch(fetchRecipes());
   }
 
   onSaveData() {

@@ -1,5 +1,11 @@
 # RecipeBook
 
+## Project Info
+
+This is the _Course Project_ from [Angular - The Complete Guide](https://www.udemy.com/course/the-complete-guide-to-angular-2/).<br />
+It is a demo application to learn the basics of Angular, like Directives, Services & DI, Forms, Routing, Http, ...<br />
+Check the branches of this repo learn more about a specific topic.
+
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 14.0.3.
 
 ## Development server
